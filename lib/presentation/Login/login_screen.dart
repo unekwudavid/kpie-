@@ -276,7 +276,7 @@ class _LoginPageState extends State<LoginPage> {
         if (kDebugMode) {
           print('login successful');
         }
-        Get.to(() => HomepagefourScreen());
+        Get.off(() => HomepagefourScreen());
       }
       else {
         Get.back();
