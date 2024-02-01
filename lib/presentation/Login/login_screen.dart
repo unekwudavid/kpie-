@@ -26,13 +26,12 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
 
 
-  late String  _server_key = '1eca16c1127fcaf8266a3ae56dffb540f5eaac9f-889fe0e508bf0365111cc95114e29263-88061744';
-  late String  _username = 'admin';
-  late String  _password = '12345678';
-  late String  _deviceType ='phone';
+  late String  _username;
+  late String  _password;
+ // late String  _deviceType;
+  late String  key = '1eca16c1127fcaf8266a3ae56dffb540f5eaac9f-889fe0e508bf0365111cc95114e29263-88061744';
 
   final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
-
   String? get title => null;
 
   @override
@@ -41,12 +40,7 @@ class _LoginPageState extends State<LoginPage> {
     return MaterialApp(
         home:Container(
             decoration: BoxDecoration(
-             /** image: DecorationImage(
-                  fit: BoxFit.contain,
-                  colorFilter: ColorFilter.mode(Colors.lightBlue.withOpacity(0.2), BlendMode.dstATop),
-                  image: AssetImage('')
-              ) **/
-            ),
+             ),
             child:Scaffold(
                 backgroundColor: Colors.transparent,
                 body:
@@ -172,7 +166,9 @@ class _LoginPageState extends State<LoginPage> {
 **/
                               SizedBox(height:35.0),
                               ElevatedButton(
-                                onPressed:  SignIn,
+                                onPressed: (){
+                                 SignIn();
+                              },
                                 child: Text('login'),
                               ),
 
@@ -242,33 +238,49 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
+  showAlertDialog1(BuildContext context){
+    AlertDialog alert= AlertDialog(contentPadding: EdgeInsets.all(5),
+      content: new Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+         Text('please check your login details and try again'),
+                ],
+      ),
+    ) ;
+    showDialog(context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context){
+          return alert;
+        }
+    );
+  }
+
   Future SignIn() async {
-    showAlertDialog(context);
+  // showAlertDialog(context);
     final formState = _formkey.currentState;
     if (formState!.validate()) {
       formState.save();
 
-
       String? baseUrl = 'https://fashionbiz.org/';
 
-      final response = await http.post(Uri.parse('$baseUrl'),
+      final response = await http.post(Uri.parse('${baseUrl}wowwonder/api/auth'),
+
           body: jsonEncode(
               {
-                'server_key': _server_key,
+                'server_key': key,
                 'username': _username,
                 'password': _password,
-                'device_type': _deviceType,
+                'device_type': 'phone',
               }
           ),
         );
-
       if (response.statusCode == 401) {
         if (kDebugMode) {
           print('Raw Response Body: ${response.body}');
         }
       }
+      showAlertDialog(context);
       if (response.statusCode == 200) {
-
         if (kDebugMode) {
           print('Raw Response Body: ${response.body}');
         }
@@ -279,7 +291,7 @@ class _LoginPageState extends State<LoginPage> {
         Get.off(() => HomepagefourScreen());
       }
       else {
-        Get.back();
+      // showAlertDialog1(context);
         if (kDebugMode) {
           print('login failed: ${response.body}');
         }
@@ -287,64 +299,7 @@ class _LoginPageState extends State<LoginPage> {
       //if(context.mounted){Get.back();}
     }
 
-    /**  showAlertDialog1(BuildContext context){
-        AlertDialog(contentPadding: EdgeInsets.all(5),
-        content: new Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-        Container(margin: EdgeInsets.only(left: 5),
-        ),
-        ],
-        ),
-        ) ;
-        } **/
 
-    /** Future<void> signIn() async {
-        final formState = _formkey.currentState;
-        if (formState!.validate()) {
-        formState.save();
-
-        try {
-        showAlertDialog(context);
-        await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: _email,
-        password: _password
-        );
-        }
-        on FirebaseAuthException catch (e) {
-
-        showDialog(context: context,
-        barrierDismissible: false,
-        builder: (context) => AlertDialog(
-        content: ListTile(
-        title: Text('Error',
-        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0,),
-        ),
-        subtitle: Text(e.code)
-        ),
-        titlePadding: EdgeInsets.only(bottom: 20.0) ,
-        contentPadding: EdgeInsets.all(12.0),
-        actions: <Widget>[
-        Row(
-        children: <Widget>[
-        ElevatedButton(
-        onPressed: (){
-        Navigator.of(context).pop();
-        Navigator.pop(context);
-        },
-        child:Text('OK')
-        ),
-        SizedBox(height: 35.0,)
-        ],
-        ),
-        ],
-        )
-        );
-        }
-        }
-        Navigator.pushReplacement(context,
-        MaterialPageRoute(builder: (context) => HomePage('title'))) ;
-        } **/
   }
 
 }
